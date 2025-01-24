@@ -23,10 +23,12 @@ import { LoadItem } from "@/components/layout/loading";
 import { useUserSession } from "@/app/states/useUserId";
 import { useHandleData } from "@/app/states/useHandleData";
 import { useCurrencies } from "@/app/currency/hook/useCurrencies";
+import { NumericFormat } from "react-number-format";
 
 export const InvestmentDialogForm = () => {
   const { id } = useUserSession();
   const [open, setOpen] = useState(false);
+  const [buyingPrice, setBuyingPrice] = useState(0);
   const { creating, setIsCreating, handleRefreshSignal } = useHandleData();
   const { currency, fetchCurrencies } = useCurrencies();
   return (
@@ -72,6 +74,7 @@ export const InvestmentDialogForm = () => {
             // }}
             onSubmit={async (values, { setSubmitting }) => {
               setIsCreating(true);
+              setBuyingPrice(0);
               try {
                 const defaultValue = { ...values, userId: id };
                 const { bff } = config;
@@ -100,9 +103,49 @@ export const InvestmentDialogForm = () => {
             {({ handleChange, handleBlur, handleSubmit, isSubmitting }) => (
               <form onSubmit={handleSubmit}>
                 <Field label="Precio de Compra">
-                  <Input
+                  {buyingPrice >= 100 ? (
+                    <NumericFormat
+                      name="buyPrice"
+                      value={buyingPrice}
+                      decimalScale={8}
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      fixedDecimalScale
+                      allowLeadingZeros={false}
+                      onChange={(e) => {
+                        setBuyingPrice(Number(e.target.value));
+                        handleChange(e);
+                      }}
+                      onBlur={handleBlur}
+                    />
+                  ) : (
+                    <NumericFormat
+                      name="buyPrice"
+                      value={buyingPrice}
+                      decimalScale={2}
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      fixedDecimalScale
+                      allowLeadingZeros={false}
+                      onChange={(e) => {
+                        setBuyingPrice(Number(e.target.value));
+                        handleChange(e);
+                      }}
+                      onBlur={handleBlur}
+                    />
+                  )}
+                  <NumericFormat
                     name="buyPrice"
-                    onChange={handleChange}
+                    value={buyingPrice}
+                    decimalScale={8}
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    fixedDecimalScale
+                    allowLeadingZeros={false}
+                    onChange={(e) => {
+                      setBuyingPrice(Number(e.target.value));
+                      handleChange(e);
+                    }}
                     onBlur={handleBlur}
                   />
                 </Field>
